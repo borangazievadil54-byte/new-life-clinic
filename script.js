@@ -82,8 +82,17 @@ document.addEventListener("DOMContentLoaded", function () {
   onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
 
-  /* --- плавное появление блоков при скролле --- */
+  /* --- плавное появление блоков при скролле (с лёгким каскадом) --- */
   const reveals = document.querySelectorAll(".reveal");
+  reveals.forEach(function (el) {
+    var parent = el.parentElement;
+    if (!parent) return;
+    var sibs = Array.prototype.filter.call(parent.children, function (c) {
+      return c.classList && c.classList.contains("reveal");
+    });
+    var idx = sibs.indexOf(el);
+    if (idx > 0) el.style.transitionDelay = Math.min(idx, 5) * 70 + "ms";
+  });
   if ("IntersectionObserver" in window) {
     const io = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
@@ -96,5 +105,62 @@ document.addEventListener("DOMContentLoaded", function () {
     reveals.forEach(function (el) { io.observe(el); });
   } else {
     reveals.forEach(function (el) { el.classList.add("visible"); });
+  }
+
+  /* --- квиз-квалификация (3 вопроса) --- */
+  const quizCard = document.getElementById("quiz-card");
+  if (quizCard) {
+    const steps = Array.prototype.slice.call(quizCard.querySelectorAll(".quiz-step"));
+    const bar = document.getElementById("quiz-bar");
+    const total = 3;
+    let current = 0;
+    const answers = [];
+
+    function showStep(index) {
+      steps.forEach(function (s) {
+        s.classList.toggle("is-active", Number(s.dataset.step) === index);
+      });
+      let w = (index / total) * 100;
+      if (index === 0) w = 8;
+      if (index >= total) w = 100;
+      if (bar) bar.style.width = w + "%";
+      current = index;
+    }
+
+    function buildResult() {
+      const waBtn = document.getElementById("quiz-wa");
+      const msg =
+        "Здравствуйте! Прошла тест на сайте New Life Clinic." +
+        "\n1) Беспокоит: " + (answers[0] || "—") +
+        "\n2) Последний визит к гинекологу: " + (answers[1] || "—") +
+        "\n3) УЗИ и мазок за год: " + (answers[2] || "—") +
+        "\nХочу записаться на комплексный осмотр (39 000 ₸).";
+      if (waBtn) {
+        waBtn.href = "https://wa.me/" + CONFIG.whatsappNumber + "?text=" + encodeURIComponent(msg);
+      }
+    }
+
+    quizCard.querySelectorAll(".quiz-opt").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        answers[current] = btn.dataset.value;
+        const next = current + 1;
+        if (next >= total) {
+          buildResult();
+          showStep(total);
+        } else {
+          showStep(next);
+        }
+      });
+    });
+
+    const restart = document.getElementById("quiz-restart");
+    if (restart) {
+      restart.addEventListener("click", function () {
+        answers.length = 0;
+        showStep(0);
+      });
+    }
+
+    showStep(0);
   }
 });
