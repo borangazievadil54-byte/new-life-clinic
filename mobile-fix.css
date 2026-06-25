@@ -1,0 +1,104 @@
+/* =========================================================
+   Общие мобильные правки для ВСЕХ версий (грузится после темы)
+   Центрирование героя + защита от горизонтального переполнения.
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+  /* нет горизонтального скролла / обрезки справа */
+  html, body { overflow-x: hidden !important; max-width: 100%; }
+
+  /* КОРЕНЬ ПЕРЕПОЛНЕНИЯ: grid-элементы по умолчанию min-width:auto и не
+     сжимаются уже контента → распирают экран. Принудительно разрешаем сжатие. */
+  .hero-grid,
+  .promo,
+  .about-grid,
+  .booking-grid,
+  .footer-inner { grid-template-columns: 1fr !important; }
+  .hero-grid > *,
+  .promo > *,
+  .about-grid > *,
+  .booking-grid > *,
+  .hero-copy,
+  .hero-photo,
+  .booking-form-wrap,
+  .contacts-wrap { min-width: 0 !important; max-width: 100% !important; }
+
+  /* поля формы — строго по ширине контейнера */
+  .booking-form,
+  .booking-form label,
+  .booking-form input,
+  .booking-form select,
+  .booking-form button {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* КЛЮЧЕВОЕ: всё внутри героя переносится и не шире экрана
+     (перебивает любые white-space:nowrap из тем) */
+  .hero-copy * { white-space: normal !important; max-width: 100% !important; }
+
+  /* центрируем первый экран */
+  .hero-copy,
+  .hero-copy .eyebrow,
+  .hero-copy h1,
+  .hero-copy .hero-role,
+  .hero-copy .hero-lead { text-align: center !important; }
+
+  /* размеры под мобильный, перенос длинных слов */
+  .hero-copy .eyebrow { font-size: .64rem !important; letter-spacing: .08em !important; }
+  .hero .hero-copy .hero-role {
+    font-size: .88rem !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+  .hero-copy h1 {
+    font-size: clamp(1.7rem, 7.2vw, 2.4rem) !important;
+    line-height: 1.12 !important;
+    overflow-wrap: break-word; word-break: break-word;
+  }
+
+  /* центрируем плашки и интерактив */
+  .hero-badge { margin-left: auto !important; margin-right: auto !important; }
+  .hero-lead { margin-left: auto !important; margin-right: auto !important; }
+  .hero-actions { justify-content: center !important; }
+  .hero-actions .btn { width: 100% !important; }
+
+  /* строка статистики — в столбик по центру (гарантированно не распирает экран) */
+  .hero .hero-stats {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+  .hero .hero-stats li { align-items: center !important; text-align: center !important; }
+  .hero-stats strong { font-size: 1.3rem !important; }
+
+  /* фото врача всегда в пределах экрана и по центру */
+  .hero-photo {
+    max-width: 300px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  .photo-frame { max-width: 100% !important; }
+  .photo-frame img { width: 100%; }
+  .hero-photo::before { display: none !important; }
+
+  /* НУКЛЕАРНО: заголовок и подзаголовок врача — блок на всю ширину,
+     по центру, с переносом (перебиваем самые специфичные правила тем) */
+  .hero .hero-copy h1,
+  .hero .hero-copy p.hero-role,
+  .hero .hero-copy p.eyebrow,
+  .hero .hero-copy .eyebrow {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    text-align: center !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+  }
+  .hero .hero-copy p.hero-role { font-size: .86rem !important; }
+}
